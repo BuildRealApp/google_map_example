@@ -35,6 +35,8 @@ function initMap() {
         addMarker(markers[i])
     }
 
+    drawDirection()
+
 }
 
 //'https://img.icons8.com/fluent/48/000000/marker-storm.png'
@@ -57,4 +59,39 @@ function addMarker(prop) {
             information.open(map, marker)
         })
     }
+}
+
+function drawDirection() {
+    const directionService = new google.maps.DirectionsService();
+    const directionRenderer = new google.maps.DirectionsRenderer();
+
+    directionRenderer.setMap(map)
+
+    calculationAndDisplayRoute(directionService, directionRenderer)
+
+}
+
+function calculationAndDisplayRoute(directionService, directionRenderer) {
+    const start = { lat: 53.46279485096965, lng: -2.2514995069397745 }
+    const end = { lat: 53.46344635618052, lng: -2.249321553337068 }
+    const request = {
+        origin: start,
+        destination: end,
+        travelMode: google.maps.DirectionsTravelMode.DRIVING
+    }
+
+    directionService.route(request, function (response, status) {
+       if( status === google.maps.DirectionsStatus.OK ) {
+           directionRenderer.setDirections(response)
+           let myRoute = response.routes[0]
+           let txt = ''
+           for (let i = 0; i < myRoute.legs[0].steps.length; i++) {
+               txt += myRoute.legs[0].steps[i].instructions + "<br />"
+           }
+
+           document.getElementById('directions').innerHTML = txt
+
+       }
+    });
+
 }
